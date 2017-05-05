@@ -1,0 +1,117 @@
+/*Page Styles*/
+html, body {
+    height: 100%;
+}
+
+.body-wrapper {
+    min-height: 100%;
+}
+
+.footer {
+    color: #666;
+    font-size: 1rem;
+    
+    h6 {
+        border-bottom: 1px solid #ccc;
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 0.75em;
+        padding-bottom: 0.75em;
+    }
+}
+
+.footer-space {height: 150px;}
+.footer-wrapper {
+    background: #eaeaea none repeat scroll 0 0;
+    clear: both;
+    height: 140px;
+    margin-top: -140px;
+    position: relative;
+}
+
+@media only screen and (max-width : 1000px) {
+    .footer-wrapper {
+        position: inherit;
+        margin-top: 10px;
+        height: auto;
+    }
+    
+    .footer-space {display: none;}
+}
+
+
+.header {
+    height: 180px;
+    background: rgba(0, 0, 0, 0) url("../img/header-bg.png") no-repeat scroll center top;
+    
+    .container {
+        position: relative;
+    }
+    
+    .institute {
+        color: #fff;
+        font: 11px/1em Arial;
+        position: absolute;
+        right: 0;
+        text-align: right;
+        top: 4px;
+        
+        .img {
+            width: 140px;
+            height: 21px;
+            display: block;
+            background: #FFF url("../img/logo-university.png") no-repeat;
+            float: right;
+            margin-left: 5px;
+        }
+    }
+    
+    a, *:link, *:visited {
+        color: #fff;
+    }
+    
+    .title {
+        font: 28px Georgia;
+        color: #FFF;
+        width: 350px;
+        position: absolute;
+        top: 20px;
+    }
+    
+    h1 {
+        color: #AAD562;
+        font: 28px Georgia; 
+    }
+    
+    .navigation {
+        display: block;
+        position: absolute;
+        top: 110px;
+        margin-left: 0;
+        padding-left: 0;
+        
+        li {
+            display: block;
+            position: relative;
+            float: left;
+            padding: 10px;
+            
+            a {
+                display: block;
+                font: 16px Georgia;
+                color: #FFF;
+                white-space: nowrap;
+            }
+            
+            &.active  a {
+                color: #AAA;
+            }
+            
+            &:first-child {
+                padding-left: 0;
+            }
+        }
+    }
+}
+
+

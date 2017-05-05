@@ -1,0 +1,24 @@
+
+/*Automat ###################################################################*/
+.panel-heading .form-inline {
+    margin-bottom: 0;
+}
+
+.panel-heading select {
+    min-width: 100px;
+}
+
+.status_wrapper {margin-top: 5px; line-height: 20px;}
+
+#div_status { display: inline-block;}
+#div_status span {
+    display: inline-block; width: 20px; height: 20px; border-radius: 10px; border: 1px solid #ccc; margin-right: 5px;
+}
+
+#div_paint {
+    cursor: pointer;
+}
+
+svg circle:hover {
+    stroke-width:2; stroke: #3983ab;
+}
