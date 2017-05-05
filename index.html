@@ -1,0 +1,146 @@
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zellulare Automaten</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+      <div class="body-wrapper">
+        <div class="header">
+            <div class="container">
+                <div class="institute">
+                    <a class="img" target="_blank" href="http://www.uni-leipzig.de"></a>
+                    <a target="_blank" href="http://www.fmi.uni-leipzig.de">Fakultät für Mathematik und Informatik</a><br>
+                    <a target="_blank" href="http://www.informatik.uni-leipzig.de">Institut für Informatik</a>
+                </div>
+                
+                <div class="title">Parallelverarbeitung und Komplexe Systeme </div>
+                <h1>Zellulare Automaten</h1>
+            </div>
+        </div>
+      
+      <div class="container">
+          <div class="row">
+                <div class="col-sm-8">
+                    <div id="div_paint">wird geladen...</div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Automat
+                        </div>
+                        <div class="panel-body">
+                            <select id="sel_automat" class="form-control">
+                                <option value="">Kopier-Automat (2D)</option>
+                            </select>
+                            <div class="status_wrapper">
+                                Status: <div id="div_status"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Grid
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <select id="sel_grid" class="form-control">
+                                    <option value="">Grid wählen oder selbst malen</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select id="sel_border" class="form-control">
+                                    <option value="loop">umlaufend</option>
+                                    <option value="fix">fester Rand</option>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <a class="btn btn-default btn-block" href="javascript:" id="bt_zoom_in"><i class="fa fa-plus-square"></i> Zoom In</a>
+                                </div>
+                                <div class="col-sm-6">
+                                    <a class="btn btn-default btn-block" href="javascript:" id="bt_zoom_out"><i class="fa fa-minus-square"></i> Zoom Out</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <select id="sel_speed" class="form-control">
+                                    <option value="250">Geschwindigkeit (Standard: 0,5sek)</option>
+                                    <option value="10">0,01 Sekunde</option>
+                                    <option value="100">0,1 Sekunde</option>
+                                    <option value="1000">1 Sekunde</option>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    Population: <span id="txt_population">0</span>
+                                </div>
+                                <div class="col-sm-6">
+                                    Generation: <span id="txt_generation">0</span>
+                                </div>
+                            </div>
+                            <a class="btn btn-success btn-block" href="javascript:" id="bt_start_stop">Start/Stop</a>
+                            <a class="btn btn-default btn-block" href="javascript:" id="bt_step">Schritt</a>
+                        </div>
+                    </div>
+                    
+                </div>
+          </div>
+        </div>
+          <div class="footer-space"></div>
+      </div>
+      
+      <div class="footer-wrapper">
+          <div class="footer">
+            <div class="container">
+                <div class="row">
+                        <div class="col-md-6 widget">
+                            <h6>About</h6>
+                        <article class="widget_content">
+                            <ul>
+                                <li>Kleine Demonstrationen von Zellularen Automaten</li>
+                                <li>Git-Repo: <a href="https://github.com/falkmueller/cellular-automaton" target="_blank">cellular-automaton</a></li>
+                         </ul>
+                         </article>
+                        </div>
+                    <div class="col-md-6 widget">
+                            <h6>Link</h6>
+                        <article class="widget_content">
+                            <ul>
+                                <li><a target="_blank" href="http://pacosy.informatik.uni-leipzig.de/">Parallelverarbeitung und Komplexe Systeme</a></li>
+                                <li><a target="_blank" href="http://www.informatik.uni-leipzig.de">Institut für Informatik</a></li>
+                                <li><a target="_blank" href="http://www.fmi.uni-leipzig.de">Fakultät für Mathematik und Informatik</a></li>
+                                <li><a target="_blank" href="http://www.uni-leipzig.de">Universität Leipzig</a></li>
+                         </ul>
+                         </article>
+                        </div>
+                </div>
+            </div>
+        </div>
+          
+          <div class="footer-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 widget">© 2016 by falk-m.de <span class="pull-right"><a href="http://www.falk-m.de" target="_blank">falk-m.de »</a></span>
+                    </div>
+                </div>
+            </div>
+        </div> 
+      </div>
+      
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="js/vendor/raphael-min.js"></script>
+    <script type="text/javascript" src="js/vendor/jquery.ba-tinypubsub.min.js"></script>
+    <script type="text/javascript" src="js/automat.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+  </body>
+</html>

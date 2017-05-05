@@ -1,0 +1,28 @@
+{
+    "automat": {
+       "r184": {
+            "name": "Regel 184 (1D)",
+            "file": "automat/r184.json",
+            "grid": [
+                {
+                    "name" : "Regel 184 Beispiel",
+                    "file" : "grid/grid_r184.json"
+                }
+            ]
+        },
+        "gol": {
+            "name": "Game of Live (2D)",
+            "file": "automat/gol.json",
+            "grid": [
+                {
+                    "name" : "Konstant und Permutierend",
+                    "file" : "grid/gol_perm.json"
+                },
+                {
+                    "name" : "Gleider",
+                    "file" : "grid/gol_glide.json"
+                }
+            ]
+        }
+    }
+}

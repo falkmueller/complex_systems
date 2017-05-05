@@ -1,0 +1,111 @@
+/*Page Styles*/
+html, body {
+    height: 100%;
+}
+
+.body-wrapper {
+    min-height: 100%;
+}
+
+.footer {
+    color: #666;
+    font-size: 1rem;
+}
+
+.footer-space {height: 150px;}
+.footer-wrapper {
+    background: #eaeaea none repeat scroll 0 0;
+    clear: both;
+    height: 140px;
+    margin-top: -140px;
+    position: relative;
+}
+
+.footer h6 {
+    border-bottom: 1px solid #ccc;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 0.75em;
+    padding-bottom: 0.75em;
+}
+
+@media only screen and (max-width : 1000px) {
+    .footer-wrapper {
+        position: inherit;
+        margin-top: 10px;
+        height: auto;
+    }
+    
+    .footer-space {display: none;}
+}
+
+
+.header {
+    height: 180px;
+    background: rgba(0, 0, 0, 0) url("../img/header-bg.png") no-repeat scroll center top;
+}
+
+.header .container {
+    position: relative;
+}
+
+.header .institute {
+    color: #fff;
+    font: 11px/1em Arial;
+    position: absolute;
+    right: 0;
+    text-align: right;
+    top: 4px;
+}
+
+.institute .img {
+    width: 140px;
+    height: 21px;
+    display: block;
+    background: #FFF url("../img/logo-university.png") no-repeat;
+    float: right;
+    margin-left: 5px;
+}
+
+.header a, .header *:link, .header *:visited {
+    color: #fff;
+}
+.header a, .header *:link, .header *:visited {
+    color: #fff;
+}
+
+.header .title {
+    color: #fff;
+    font: 32px Georgia;
+    margin-top: 20px;
+}
+
+.header h1 {
+    color: #AAD562;
+    font: 28px Georgia;
+    
+}
+
+/*Automat ###################################################################*/
+.panel-heading .form-inline {
+    margin-bottom: 0;
+}
+
+.panel-heading select {
+    min-width: 100px;
+}
+
+.status_wrapper {margin-top: 5px; line-height: 20px;}
+
+#div_status { display: inline-block;}
+#div_status span {
+    display: inline-block; width: 20px; height: 20px; border-radius: 10px; border: 1px solid #ccc; margin-right: 5px;
+}
+
+#div_paint {
+    cursor: pointer;
+}
+
+svg circle:hover {
+    stroke-width:2; stroke: #3983ab;
+}

@@ -1,0 +1,8 @@
+{
+    "status": [
+                {"color": "#AAD562"}
+            ],
+    "d": 2,
+    "translation": "transform_gol",
+    "file": "automat/gol.js"
+}
