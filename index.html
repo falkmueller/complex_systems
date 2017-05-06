@@ -22,85 +22,13 @@
                     <li class="active">
                         <a href="#">Zellulare Automaten</a>
                     </li>
-                    <li>
-                        <a href="#">Zellulare Automaten</a>
-                    </li>
                 </ul>
             </div>
         </div>
       
-      <div class="container">
-          <div class="row">
-                <div class="col-sm-8">
-                    <div id="div_paint">wird geladen...</div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Automat
-                        </div>
-                        <div class="panel-body">
-                            <select id="sel_automat" class="form-control">
-                                <option value="">Kopier-Automat (2D)</option>
-                            </select>
-                            <div class="status_wrapper">
-                                Status: <div id="div_status"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Grid
-                        </div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <select id="sel_grid" class="form-control">
-                                    <option value="">Grid wählen oder selbst malen</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <select id="sel_border" class="form-control">
-                                    <option value="loop">umlaufend</option>
-                                    <option value="fix">fester Rand</option>
-                                </select>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <a class="btn btn-default btn-block" href="javascript:" id="bt_zoom_in"><i class="fa fa-plus-square"></i> Zoom In</a>
-                                </div>
-                                <div class="col-sm-6">
-                                    <a class="btn btn-default btn-block" href="javascript:" id="bt_zoom_out"><i class="fa fa-minus-square"></i> Zoom Out</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <select id="sel_speed" class="form-control">
-                                    <option value="250">Geschwindigkeit (Standard: 0,5sek)</option>
-                                    <option value="10">0,01 Sekunde</option>
-                                    <option value="100">0,1 Sekunde</option>
-                                    <option value="1000">1 Sekunde</option>
-                                </select>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    Population: <span id="txt_population">0</span>
-                                </div>
-                                <div class="col-sm-6">
-                                    Generation: <span id="txt_generation">0</span>
-                                </div>
-                            </div>
-                            <a class="btn btn-success btn-block" href="javascript:" id="bt_start_stop">Start/Stop</a>
-                            <a class="btn btn-default btn-block" href="javascript:" id="bt_step">Schritt</a>
-                        </div>
-                    </div>
-                    
-                </div>
-          </div>
-        </div>
+      <main class="container">
+         
+        </main>
           <div class="footer-space"></div>
       </div>
       
@@ -143,5 +71,8 @@
       </div>
       
     <script type="text/javascript" src="min/js.min.js"></script>
+    <script type="text/javascript">
+        app.start();
+    </script>
   </body>
 </html>

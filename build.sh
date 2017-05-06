@@ -17,8 +17,11 @@ js/vendor/jquery-3.2.1.min.js \
 js/vendor/bootstrap.min.js \
 js/vendor/raphael-min.js \
 js/vendor/jquery.ba-tinypubsub.min.js \
-js/automat.js \
-js/app.js
+js/vendor/routie.js \
+js/vendor/classy.js \
+js/app.js \
+js/automat.js
+
 
 #compile templates:
 #http://handlebarsjs.com/precompilation.html

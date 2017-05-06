@@ -1,4 +1,163 @@
-var automat = {
+app.views.automat = app.view.$extend({
+         
+         events: [
+             ["change", "#sel_automat", "select_automat"],
+             ["change", "#sel_grid", "load_grid"],
+             ["click", "#bt_zoom_in", "zoom_in"],
+             ["click", "#bt_zoom_out", "zoom_out"],
+             ["click", "#bt_start_stop", "start_stop"],
+             ["click", "#bt_step", "single_step"],
+             ["change", "#sel_speed", "set_speed"],
+             ["change", "#sel_border", "set_border"],
+             ["click", "#div_paint svg", "set_cell"]
+         ],
+        
+        render: function(){
+             
+             
+             var me = this;
+             this.$el.load( "views/automat.html", function() {
+                $("#div_paint", this.$el).html("");
+                me.load_config();
+                me.automat = new automatClass();
+                
+                me.automat.callbacks.start = function(){
+                    $('#sel_automat').attr('disabled', true);
+                    $('#sel_grid').attr('disabled', true);
+                    $('#sel_speed').attr('disabled', true);
+                    $('#sel_border').attr('disabled', true);
+                    $('#bt_zoom_in').addClass("disabled");
+                    $('#bt_zoom_out').addClass("disabled");
+                    $('#bt_step').addClass("disabled");
+                };
+                me.automat.callbacks.stop = function(){
+                    $('#sel_automat').attr('disabled', false);
+                    $('#sel_grid').attr('disabled', false);
+                    $('#sel_speed').attr('disabled', false);
+                    $('#sel_border').attr('disabled', false);
+                    $('#bt_zoom_in').removeClass("disabled");
+                    $('#bt_zoom_out').removeClass("disabled");
+                    $('#bt_step').removeClass("disabled");
+                };
+                me.automat.callbacks.step = function(generation, population){
+                    $("#txt_population").text(population);
+                    $("#txt_generation").text(generation);
+                };
+                me.automat.callbacks.status = function(status){
+                    $("#div_status").html("");
+                    $("#div_status").append("<span style='background-color: #fff;' />");
+                    $.each(status, function(key, status){
+                        $("#div_status").append("<span style='background-color: " + status.color + ";' />");
+                    });
+                };
+
+                me.automat.init("div_paint");
+                
+             });
+            
+         },
+         
+         set_cell: function(e){
+             this.automat.set_cell(e);
+         },
+         
+         single_step: function(){
+             this.automat.single_step();
+         },
+         
+         start_stop: function(){
+             this.automat.start_stop();
+         },
+         
+         zoom_in: function(){
+             this.automat.zoom(-1);
+         },
+         
+         zoom_out: function(){
+             this.automat.zoom(1);
+         },
+         
+         select_automat: function(){
+            var name = $("#sel_automat").val();
+            $("#sel_grid option[value!='']").remove();
+
+            if(name){
+                this.load_automat(this.config.automat[name].file);
+
+                //Grids setzen        
+                $.each(this.config.automat[name].grid, function(key, grid){
+                    var opt = $("<option/>");
+                    opt.text(grid.name);
+                    opt.attr("value", grid.file);
+                    $("#sel_grid").append(opt);
+                });
+            } else {
+                this.load_automat("");
+            }
+        },
+        
+        load_automat: function(file){
+            if(!file){
+                this.automat.load_automat(this.automat.standard.automat);
+                return;
+            }
+            
+            var me = this;
+            $.ajax({
+                url: "data/" + file,
+                dataType: 'json',
+                success: function(resp){
+                    me.automat.load_automat(resp);
+                }
+            });
+        },
+        
+        load_config: function(){
+            var me = this;
+            $.ajax({
+                url: "data/config.json",
+                dataType: 'json',
+                success: function(config){
+                    me.config = config;
+
+                    var sel_automat = $("#sel_automat");
+                    $.each(me.config.automat, function(key, automat){
+                        var opt = $("<option/>");
+                        opt.text(automat.name);
+                        opt.attr("value", key);
+                        sel_automat.append(opt);
+                    });
+                }
+            });
+        },
+        
+         set_border: function(){
+            this.automat.set_border($("#sel_border").val());  
+        },
+
+        set_speed: function(){
+            this.automat.set_speed(parseInt($("#sel_speed").val()));  
+        },
+
+        load_grid: function(){
+            var file = $("#sel_grid").val();
+            if(!file){
+                this.automat.load_grid(this.automat.standard.grid);
+                return;
+            }
+            
+            var me = this;
+            $.ajax({
+                url: "data/" + file,
+                dataType: 'json',
+                success: function(grid){
+                    me.automat.load_grid(grid);
+                }
+            });
+        },
+     });
+
+var automatClass = Class.$extend({
     translation: {},
     d: 1,
     status: [],
@@ -6,6 +165,13 @@ var automat = {
     border: "loop",
     run: false,
     generation: 0,
+    
+    callbacks: {
+        start: function(){},
+        stop: function(){},
+        step: function(generation, population){},
+        status: function(status){}
+    },
     
     grid: {
         cells: [],
@@ -38,12 +204,26 @@ var automat = {
     },
     
     init: function(container_id){
-        automat.container_id = container_id;
-        automat.grid.grid_size_px = $("#div_paint").innerWidth();
-        automat.load_automat(automat.standard.automat)
-        automat.load_grid(automat.standard.grid);
-        
-        $("#div_paint svg").click(automat.set_cell);
+        this.container_id = container_id;
+        this.grid.grid_size_px = $('#' + this.container_id).innerWidth();
+        this.load_automat(this.standard.automat)
+        this.load_grid(this.standard.grid);
+        this.callbacks.stop();
+    },
+    
+    load_script: function(path){
+        var id = path.replace(/[^A-Za-z0-9\s!?]/g,'');
+
+        if (document.getElementById(id)) {
+            return;
+        }
+
+        var js, fjs = document.getElementsByTagName('script')[0];
+        js = document.createElement('script'); 
+        js.id = id;
+        js.async = true; 
+        js.src = path; 
+        fjs.parentNode.insertBefore(js, fjs);
     },
     
     /**
@@ -52,70 +232,73 @@ var automat = {
      * @returns {undefined}
      */
     set_cell: function(e){
-        var elm = $(this);
+        var elm = $("svg", '#' + this.container_id);
         var xPos = e.pageX - elm.offset().left;
         var yPos = e.pageY - elm.offset().top;
 
-        var i_row = Math.floor(yPos / automat.grid.cell_size_px);
-        var i_col = Math.floor(xPos / automat.grid.cell_size_px);
+        var i_row = Math.floor(yPos / this.grid.cell_size_px);
+        var i_col = Math.floor(xPos / this.grid.cell_size_px);
         
-        var value = (automat.grid.cell_values[i_row][i_col] + 1) % (automat.status.length + 1);
+        var value = (this.grid.cell_values[i_row][i_col] + 1) % (this.status.length + 1);
         if(value > 0){
-            automat.grid.cells[i_row][i_col].attr("fill", automat.status[value - 1].color);
-            automat.grid.cells[i_row][i_col].attr("stroke", automat.status[value - 1].color);
+            this.grid.cells[i_row][i_col].attr("fill", this.status[value - 1].color);
+            this.grid.cells[i_row][i_col].attr("stroke", this.status[value - 1].color);
         } else {
-            automat.grid.cells[i_row][i_col].attr("fill", "#fff");
-            automat.grid.cells[i_row][i_col].attr("stroke", "#ccc");
+            this.grid.cells[i_row][i_col].attr("fill", "#fff");
+            this.grid.cells[i_row][i_col].attr("stroke", "#ccc");
         }               
-        automat.grid.cell_values[i_row][i_col] = value; 
+        this.grid.cell_values[i_row][i_col] = value; 
         
     },
     
     set_border: function(type){
-        automat.border = type;
+        this.border = type;
     },
     
     set_speed: function(wait){
-        automat.wait = wait;
+        this.wait = wait;
     },
     
     start_stop: function(){
-        if(automat.run){
-            automat.run = false;
+        if(this.run){
+            this.run = false;
         }
         else {
-            $.publish("automat.start", []);
-            automat.run = true;
-            setTimeout(automat.loop, 10);
+            this.callbacks.start();
+            this.run = true;
+            var me = this;
+            
+            setTimeout(function(){me.loop.apply(me)}, 10);
         }
     },
     
     loop: function(){
-        if(!automat.run){
-            $.publish("automat.stop", []);
+        if(!this.run){
+            this.callbacks.stop();
             return;
         }
         
-        if(automat.d == 1){
-            automat._step_d1();
+        if(this.d == 1){
+            this._step_d1();
         } else {
-            automat._step_d2();
+            this._step_d2();
         }
-        
-        setTimeout(automat.loop, automat.wait);
+        var me = this;
+        setTimeout(function(){me.loop.apply(me)}, this.wait);
     },
     
     single_step: function(){
-        $.publish("automat.start", []);
+        this.callbacks.start();
         
+        var me = this;
         setTimeout(function(){
-            if(automat.d == 1){
-                automat._step_d1();
+            if(me.d == 1){
+                me._step_d1();
             } else {
-                automat._step_d2();
+                me._step_d2();
             }
             
-            $.publish("automat.stop", []);
+            me.callbacks.stop();
         }, 10);
         
     },
@@ -124,23 +307,23 @@ var automat = {
         var cells = [];
         var population = 0;
         
-        for (i_row = 0; i_row < automat.grid.cell_values.length; i_row++) {
+        for (i_row = 0; i_row < this.grid.cell_values.length; i_row++) {
             cells[i_row] = [];
             
-            for (i_col = 0; i_col <  automat.grid.cell_values[i_row].length; i_col++) {
+            for (i_col = 0; i_col <  this.grid.cell_values[i_row].length; i_col++) {
                 var i_col_bevore = i_col - 1;
                 var i_col_after = i_col + 1;
                 
                 if (i_col_bevore < 0){
-                    if(automat.border == "loop"){
-                        i_col_bevore = automat.grid.cell_values[i_row].length - 1;
+                    if(this.border == "loop"){
+                        i_col_bevore = this.grid.cell_values[i_row].length - 1;
                     } else {
                         i_col_bevore = -1;
                     }
                 }
 
-                if (i_col_after >= automat.grid.cell_values[i_row].length){
-                    if(automat.border == "loop"){
+                if (i_col_after >= this.grid.cell_values[i_row].length){
+                    if(this.border == "loop"){
                         i_col_after = 0;
                     } else {
                         i_col_after = -1;
@@ -148,16 +331,16 @@ var automat = {
                 }
                 
                 var signatur = "";
-                var value = automat.grid.cell_values[i_row][i_col];
+                var value = this.grid.cell_values[i_row][i_col];
                 
                 //aktuelle zeile
-                if(i_col_bevore < 0) {signatur += 0;} else {signatur += automat.grid.cell_values[i_row][i_col_bevore]}
+                if(i_col_bevore < 0) {signatur += 0;} else {signatur += this.grid.cell_values[i_row][i_col_bevore]}
                 signatur += value;
-                if(i_col_after < 0) {signatur += 0;} else {signatur += automat.grid.cell_values[i_row][i_col_after]}
+                if(i_col_after < 0) {signatur += 0;} else {signatur += this.grid.cell_values[i_row][i_col_after]}
                 
                 
-                if(automat.translation[signatur] !== null){
-                    value = automat.translation[signatur];
+                if(this.translation[signatur] !== null){
+                    value = this.translation[signatur];
                 }
                 
                 if(value){population++;}
@@ -166,50 +349,50 @@ var automat = {
             }
         }
         
-        automat._draw_cells(cells);
+        this._draw_cells(cells);
         
-        automat.generation++;
-        $.publish("automat.step", [automat.generation, population]);
+        this.generation++;
+        this.callbacks.step(this.generation, population);
     },
     
     _step_d2: function(){
         var cells = [];
         var population = 0;
         
-        for (i_row = 0; i_row < automat.grid.cell_values.length; i_row++) {
+        for (i_row = 0; i_row < this.grid.cell_values.length; i_row++) {
             cells[i_row] = [];
             var i_row_bevore = i_row - 1;
             var i_row_after = i_row + 1;
             if (i_row_bevore < 0){
-                if(automat.border == "loop"){
-                    i_row_bevore = automat.grid.cell_values.length - 1;
+                if(this.border == "loop"){
+                    i_row_bevore = this.grid.cell_values.length - 1;
                 } else {
                     i_row_bevore = -1;
                 }
             }
             
-            if (i_row_after >= automat.grid.cell_values.length){
-                if(automat.border == "loop"){
+            if (i_row_after >= this.grid.cell_values.length){
+                if(this.border == "loop"){
                     i_row_after = 0;
                 } else {
                     i_row_after = -1;
                 }
             }
             
-            for (i_col = 0; i_col <  automat.grid.cell_values[i_row].length; i_col++) {
+            for (i_col = 0; i_col <  this.grid.cell_values[i_row].length; i_col++) {
                 var i_col_bevore = i_col - 1;
                 var i_col_after = i_col + 1;
                 
                 if (i_col_bevore < 0){
-                    if(automat.border == "loop"){
-                        i_col_bevore = automat.grid.cell_values[i_row].length - 1;
+                    if(this.border == "loop"){
+                        i_col_bevore = this.grid.cell_values[i_row].length - 1;
                     } else {
                         i_col_bevore = -1;
                     }
                 }
 
-                if (i_col_after >= automat.grid.cell_values[i_row].length){
-                    if(automat.border == "loop"){
+                if (i_col_after >= this.grid.cell_values[i_row].length){
+                    if(this.border == "loop"){
                         i_col_after = 0;
                     } else {
                         i_col_after = -1;
@@ -217,36 +400,36 @@ var automat = {
                 }
                 
                 var signatur = "";
-                var value = automat.grid.cell_values[i_row][i_col];
+                var value = this.grid.cell_values[i_row][i_col];
                 
                 //zeile davor
                 if(i_row_bevore < 0){
                     signatur += "000";
                 } else {
-                    if(i_col_bevore < 0) {signatur += 0;} else {signatur += automat.grid.cell_values[i_row_bevore][i_col_bevore]}
-                    signatur += automat.grid.cell_values[i_row_bevore][i_col];
-                    if(i_col_after < 0) {signatur += 0;} else {signatur += automat.grid.cell_values[i_row_bevore][i_col_after]}
+                    if(i_col_bevore < 0) {signatur += 0;} else {signatur += this.grid.cell_values[i_row_bevore][i_col_bevore]}
+                    signatur += this.grid.cell_values[i_row_bevore][i_col];
+                    if(i_col_after < 0) {signatur += 0;} else {signatur += this.grid.cell_values[i_row_bevore][i_col_after]}
                 }
                 
                 //aktuelle zeile
-                if(i_col_bevore < 0) {signatur += 0;} else {signatur += automat.grid.cell_values[i_row][i_col_bevore]}
+                if(i_col_bevore < 0) {signatur += 0;} else {signatur += this.grid.cell_values[i_row][i_col_bevore]}
                 signatur += value;
-                if(i_col_after < 0) {signatur += 0;} else {signatur += automat.grid.cell_values[i_row][i_col_after]}
+                if(i_col_after < 0) {signatur += 0;} else {signatur += this.grid.cell_values[i_row][i_col_after]}
                 
                 //zeile danach
                 if(i_row_after < 0){
                     signatur += "000";
                 } else {
-                    if(i_col_bevore < 0) {signatur += 0;} else {signatur += automat.grid.cell_values[i_row_after][i_col_bevore]}
-                    signatur += automat.grid.cell_values[i_row_after][i_col];
-                    if(i_col_after < 0) {signatur += 0;} else {signatur += automat.grid.cell_values[i_row_after][i_col_after]}
+                    if(i_col_bevore < 0) {signatur += 0;} else {signatur += this.grid.cell_values[i_row_after][i_col_bevore]}
+                    signatur += this.grid.cell_values[i_row_after][i_col];
+                    if(i_col_after < 0) {signatur += 0;} else {signatur += this.grid.cell_values[i_row_after][i_col_after]}
                 }
                 
-                if(typeof automat.translation === "string"){
-                    value = window[automat.translation].apply(this, [signatur]);
+                if(typeof this.translation === "string"){
+                    value = window[this.translation].apply(this, [signatur]);
                 }
-                else if(automat.translation[signatur] !== null){
-                    value = automat.translation[signatur];
+                else if(this.translation[signatur] !== null){
+                    value = this.translation[signatur];
                 }
                 
                 if(value){population++;}
@@ -255,75 +438,75 @@ var automat = {
             }
         }
         
-        automat._draw_cells(cells);
+        this._draw_cells(cells);
         
-        automat.generation++;
-        $.publish("automat.step", [automat.generation, population]);
+        this.generation++;
+        this.callbacks.step(this.generation, population);
     },
     
     zoom: function(diff){
-        automat.load_grid({
-            col_count: automat.grid.grid_size_cells + diff,
-            row_count: automat.grid.grid_size_cells + diff,
-            cells: automat.grid.cell_values
+        this.load_grid({
+            col_count: this.grid.grid_size_cells + diff,
+            row_count: this.grid.grid_size_cells + diff,
+            cells: this.grid.cell_values
         });
     },
     
     load_automat: function(conf){
-        automat.status = conf.status;
-        automat.translation = conf.translation;
-        automat.generation = 0;
-        automat.d = conf.d;
+        this.status = conf.status;
+        this.translation = conf.translation;
+        this.generation = 0;
+        this.d = conf.d;
         
         if(conf.file){
-            load_script("data/" + conf.file);
+            this.load_script("data/" + conf.file);
         }
         
-        $.publish("automat.status", [conf.status]);
+        this.callbacks.status(conf.status);
     },
     
     load_grid: function(grid){
-        automat.grid.grid_size_cells = Math.max(grid.col_count, grid.row_count);
-        automat.grid.cell_size_px = Math.floor(automat.grid.grid_size_px / automat.grid.grid_size_cells);
-        if(automat.grid.cell_size_px > 40){
-            automat.grid.cell_size_px = 40;
-            automat.grid.grid_size_cells = Math.floor(automat.grid.grid_size_px / automat.grid.cell_size_px);
+        this.grid.grid_size_cells = Math.max(grid.col_count, grid.row_count);
+        this.grid.cell_size_px = Math.floor(this.grid.grid_size_px / this.grid.grid_size_cells);
+        if(this.grid.cell_size_px > 40){
+            this.grid.cell_size_px = 40;
+            this.grid.grid_size_cells = Math.floor(this.grid.grid_size_px / this.grid.cell_size_px);
         }
         
-        if(automat.paper){
-            automat.paper.clear();
+        if(this.paper){
+            this.paper.clear();
         } else {
-            automat.paper = Raphael(automat.container_id, automat.grid.grid_size_px , automat.grid.grid_size_px);
+            this.paper = Raphael(this.container_id, this.grid.grid_size_px , this.grid.grid_size_px);
         }
         
-        automat.grid.cells = [];
-        automat.grid.cell_values = [];
+        this.grid.cells = [];
+        this.grid.cell_values = [];
         
-        var set = automat.paper.set();
+        var set = this.paper.set();
 
-        var radius = Math.floor(automat.grid.cell_size_px / 2);
-        for (i_row = 0; i_row < automat.grid.grid_size_cells; i_row++) {
-            automat.grid.cells[i_row] = [];
-            automat.grid.cell_values[i_row] = [];
+        var radius = Math.floor(this.grid.cell_size_px / 2);
+        for (i_row = 0; i_row < this.grid.grid_size_cells; i_row++) {
+            this.grid.cells[i_row] = [];
+            this.grid.cell_values[i_row] = [];
             
-            for (i_col = 0; i_col < automat.grid.grid_size_cells; i_col++) {
-                var circle = automat.paper.circle(i_col * automat.grid.cell_size_px, i_row * automat.grid.cell_size_px, radius);
+            for (i_col = 0; i_col < this.grid.grid_size_cells; i_col++) {
+                var circle = this.paper.circle(i_col * this.grid.cell_size_px, i_row * this.grid.cell_size_px, radius);
                 circle.attr("fill", "#fff");
                 circle.attr("stroke", "#ccc");
                 set.push(circle);
                 
-                automat.grid.cells[i_row][i_col] = circle;
-                automat.grid.cell_values[i_row][i_col] = 0;
+                this.grid.cells[i_row][i_col] = circle;
+                this.grid.cell_values[i_row][i_col] = 0;
             }
         }
 
-       set.translate(automat.grid.cell_size_px/2 + 1, automat.grid.cell_size_px/2 + 1);
+       set.translate(this.grid.cell_size_px/2 + 1, this.grid.cell_size_px/2 + 1);
         
-       grid.cells = automat._center_cells(automat.grid.grid_size_cells,grid.cells);
-       automat._draw_cells(grid.cells);
+       grid.cells = this._center_cells(this.grid.grid_size_cells,grid.cells);
+       this._draw_cells(grid.cells);
     },
     
-    _center_cells: function(size, cells){
+     _center_cells: function(size, cells){
         
          if (cells.length < size){
             //höhe vergrößern
@@ -370,23 +553,24 @@ var automat = {
     },
     
     _draw_cells: function(cells){
+        var me = this;
         $.each(cells, function(i_row, row){
             $.each(row, function(i_col, value){
-                if(value != automat.grid.cell_values[i_row][i_col]){
-                    if(value > 0 && automat.status.length >= value){
-                        automat.grid.cell_values[i_row][i_col] = value;
-                        automat.grid.cells[i_row][i_col].attr("fill", automat.status[value - 1].color);
-                        automat.grid.cells[i_row][i_col].attr("stroke", automat.status[value - 1].color);
+                if(value != me.grid.cell_values[i_row][i_col]){
+                    if(value > 0 && me.status.length >= value){
+                        me.grid.cell_values[i_row][i_col] = value;
+                        me.grid.cells[i_row][i_col].attr("fill", me.status[value - 1].color);
+                        me.grid.cells[i_row][i_col].attr("stroke", me.status[value - 1].color);
                     } else {
-                        automat.grid.cell_values[i_row][i_col] = 0;
-                        automat.grid.cells[i_row][i_col].attr("fill", "#fff");
-                        automat.grid.cells[i_row][i_col].attr("stroke", "#ccc");
+                        me.grid.cell_values[i_row][i_col] = 0;
+                        me.grid.cells[i_row][i_col].attr("fill", "#fff");
+                        me.grid.cells[i_row][i_col].attr("stroke", "#ccc");
                     }
                 }
             });
         });
     },
-}
+});
 
 function automat_copy(signature){
     

@@ -1,157 +1,87 @@
-/*app.js*/
-var app={
-    config: {},
-    
-    start: function(){
-        $("#div_paint").html("");
-        app.load_config();
-        app.set_events();
-        automat.init("div_paint");
-        $.publish("automat.stop",[]);
-    },
-    
-    
-    load_config: function(){
-        $.ajax({
-            async: false,
-            url: "data/config.json",
-            dataType: 'json',
-            success: function(config){
-                app.config = config;
-            }
-        });
+var app = {
+         config: {},
+         views: {},
+         store:{},
+         
+         route: function(viewName, params){
+             if(app._currentView){
+                 app._currentView._off(); 
+                 app._currentView.off();
+             }
+             
+             if(app.views[viewName]){
+                app._currentView = new app.views[viewName]($("main"),params);
+                app._currentView.render();
+             } else {
+                console.log("ROUTE NOT FOUND");
+             }
+         },
+         
+         view: Class.$extend({
+             params: {},
+             $el: null,
+             
+             events: [],
+             
+             render: function(){
+                 console.log("render function not implemented");
+             },
+     
+             __init__ : function($el, params) {
+                 this.params = params;
+                 this.$el = $el;
+                 this._bindEvents(this.events);
+             },
+             
+             _bindEvents: function(){
+                 var me = this;
+                 $(this.events).each(function(i, event){
+                     if(me[event[2]]){
+                         me._on(event[0], event[1], me[event[2]]);
+                     }
+                 });
+             },
+             
+             off: function(){
+                
+             },
+             
+             _off: function(event, selector){
+                 if (typeof event === "undefined" || event === null) { 
+                     this.$el.off();
+                 }
+                 else if (typeof selector === "undefined" || selector === null){
+                     this.$el.off(event);
+                 } else {
+                     this.$el.off(event, selector);
+                 }
+             },
+             
+             _on: function(event, selector, callback){
+                 var me = this;
+                 this.$el.on(event, selector, function(){ callback.apply(me, arguments)} );
+             }
+         }),
+         
+         start: function(){
+             routie({
+                '': function() {
+                  app.route('automat', {});
+                },
+                '/:view': function(viewrName) {
+                   app.route(viewrName, {});
+                },
+                '/:view/*': function(viewrName, params) {
+                    var paramsObj = {};
+                    var params_split = params.split("/");
+                    for(var i = 0; i < params_split.length; i = i + 2){
+                        if(params_split[i].length > 0){
+                            paramsObj[params_split[i]] = params_split[i+1];
+                        }
+                    }
 
-        var sel_automat = $("#sel_automat");
-        $.each(app.config.automat, function(key, automat){
-            var opt = $("<option/>");
-            opt.text(automat.name);
-            opt.attr("value", key);
-            sel_automat.append(opt);
-        });
-    },
-    
-    set_events: function(){
-        $("#sel_automat").change(app.select_automat);
-        $("#sel_grid").change(function(){app.load_grid($(this).val());});
-        $("#bt_zoom_in").click(function(){automat.zoom(-1);});
-        $("#bt_zoom_out").click(function(){automat.zoom(1);});
-        $("#bt_start_stop").click(automat.start_stop);
-        $("#bt_step").click(automat.single_step);
-        $("#sel_speed").change(app.set_speed);
-        $("#sel_border").change(app.set_border);
-        
-        $.subscribe("automat.step", function(a, population, generation){
-            $("#txt_population").text(population);
-            $("#txt_generation").text(generation);
-        });
-        
-        $.subscribe("automat.start", function(){
-             $('#sel_automat').attr('disabled', true);
-             $('#sel_grid').attr('disabled', true);
-             $('#sel_speed').attr('disabled', true);
-             $('#sel_border').attr('disabled', true);
-             $('#bt_zoom_in').addClass("disabled");
-             $('#bt_zoom_out').addClass("disabled");
-             $('#bt_step').addClass("disabled");
-        });
-        
-        $.subscribe("automat.stop", function(){
-            $('#sel_automat').attr('disabled', false);
-            $('#sel_grid').attr('disabled', false);
-            $('#sel_speed').attr('disabled', false);
-            $('#sel_border').attr('disabled', false);
-            $('#bt_zoom_in').removeClass("disabled");
-            $('#bt_zoom_out').removeClass("disabled");
-            $('#bt_step').removeClass("disabled");
-        });
-        
-        $.subscribe("automat.status", function(a, status){
-            $("#div_status").html("");
-            $("#div_status").append("<span style='background-color: #fff;' />");
-            $.each(status, function(key, status){
-                $("#div_status").append("<span style='background-color: " + status.color + ";' />");
-            });
-        });
-        
-    },
-    
-    set_border: function(){
-        automat.set_border($("#sel_border").val());  
-    },
-    
-    set_speed: function(){
-        automat.set_speed(parseInt($("#sel_speed").val()));  
-    },
-    
-    load_grid: function(file){
-        
-        if(!file){
-            automat.load_grid(automat.standard.grid);
-            return;
-        }
-        
-        $.ajax({
-            async: false,
-            url: "data/" + file,
-            dataType: 'json',
-            success: function(grid){
-                automat.load_grid(grid);
-            }
-        });
-    },
-    
-    
-    select_automat: function(){
-
-        var name = $("#sel_automat").val();
-        $("#sel_grid option[value!='']").remove();
-        app.load_automat("");
-
-        if(name){
-            app.load_automat(app.config.automat[name].file);
-
-            //Grids setzen        
-            $.each(app.config.automat[name].grid, function(key, grid){
-                var opt = $("<option/>");
-                opt.text(grid.name);
-                opt.attr("value", grid.file);
-                $("#sel_grid").append(opt);
-            });
-        }
-    },
-
-    load_automat: function(file){
-        if(!file){
-            automat.load_automat(automat.standard.automat);
-            return;
-        }
-        
-        $.ajax({
-            async: false,
-            url: "data/" + file,
-            dataType: 'json',
-            success: function(resp){
-                automat.load_automat(resp);
-            }
-        });
-    }
-};
-
-$(document).ready(function(){
-    app.start();
-});
-
-function load_script(path){
-    var id = path.replace(/[^A-Za-z0-9\s!?]/g,'');
-    
-    if (document.getElementById(id)) {
-        return;
-    }
-    
-    var js, fjs = document.getElementsByTagName('script')[0];
-    js = document.createElement('script'); 
-    js.id = id;
-    js.async = true; 
-    js.src = path; 
-    fjs.parentNode.insertBefore(js, fjs);
-}
+                   app.route(viewrName, paramsObj);
+                }
+              });
+         }
+     };
