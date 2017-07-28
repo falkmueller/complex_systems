@@ -20,7 +20,9 @@ js/vendor/jquery.ba-tinypubsub.min.js \
 js/vendor/routie.js \
 js/vendor/classy.js \
 js/app.js \
-js/automat.js
+js/view/automat.js \
+js/view/automat1d.js \
+js/view/ants.js
 
 
 #compile templates:
