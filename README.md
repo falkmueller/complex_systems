@@ -1,7 +1,7 @@
-#Cellular automat
+# Demo of cellular automats and swarms
 
 ![Screnshot](screenshot.png)
 
-##Installation
+## Installation
 - only copy to your host.
 - simple Js-application without serverside Code
