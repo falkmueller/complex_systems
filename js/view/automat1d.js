@@ -1,3 +1,10 @@
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function(searchString, position) {
+    position = position || 0;
+    return this.indexOf(searchString, position) === position;
+  };
+}
+
 app.automat1d = {};
     app.automat1d.palindrom = {
         cell_step: function (band, pos){
@@ -55,7 +62,7 @@ app.automat1d = {};
             else if (right[3] == "<-" || right[3] == "<+"){ /*Transport des ergebnisses*/
                 ret[3] = right[3];
             }
-            else if(left[3] == ">"){
+            else if(left[3] == ">" && self[3] == "_"){
                 ret[3] = left[3];
             }
             else if(right[3] == "<"){
@@ -93,6 +100,7 @@ app.automat1d = {};
          
          band: null,
          automat: null,
+         interval: null,
          
          start: function(){
             var word = $("#text-input", this.$el).val();
@@ -103,6 +111,7 @@ app.automat1d = {};
 
             $("#sel-type", this.$el).prop("disabled", true);
             $("#text-input", this.$el).prop("disabled", true);
+            $("#sel-output", this.$el).prop("disabled", true);
             this.band = [];
             this.automat = app.automat1d.palindrom;
 
@@ -111,6 +120,15 @@ app.automat1d = {};
             }
 
             this.print_band();
+            
+           if($("#sel-output", this.$el).val().startsWith("interval")){
+                $("#bt-step", this.$el).prop("disabled", true);
+                $("#bt-step", this.$el).addClass("disabled");
+                var me = this;
+                this.interval = setInterval(function(){
+                    me.step();
+                }, parseInt($("#sel-output", this.$el).val().substr(8)));
+            }
          },
          
          step: function(){
@@ -129,6 +147,9 @@ app.automat1d = {};
             
             if(this.automat.check_finish(this.band)){
                  $("#output", this.$el).append("<div class='alert alert-success'>Fertig</div>");
+                 if(this.interval){
+                    clearInterval(this.interval);
+                 }
             }
              
          },
@@ -146,6 +167,10 @@ app.automat1d = {};
                  band_content += "</div>";   
             }
             
+            if($("#sel-output", this.$el).val().startsWith("interval")){
+                $("#output", this.$el).html("");
+            }
+            
             $("#output", this.$el).append("<div class='clearfix' style='background-color: #EFEFEF; margin-bottom: 10px;'>" + band_content + "</div>");
         },
          
@@ -154,5 +179,12 @@ app.automat1d = {};
              $("#output", this.$el).html("");
              $("#sel-type", this.$el).prop("disabled", false);
              $("#text-input", this.$el).prop("disabled", false);
+             $("#sel-output", this.$el).prop("disabled", false);
+             $("#bt-step", this.$el).prop("disabled", false);
+             $("#bt-step", this.$el).removeClass("disabled");
+             
+             if(this.interval){
+                 clearInterval(this.interval);
+             }
          }
     });
