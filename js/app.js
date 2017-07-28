@@ -4,6 +4,10 @@ var app = {
          store:{},
          
          route: function(viewName, params){
+             
+             $("[data-link-view]").removeClass("active");
+             $("[data-link-view='" + viewName + "']").addClass("active");
+             
              if(app._currentView){
                  app._currentView._off(); 
                  app._currentView.off();
