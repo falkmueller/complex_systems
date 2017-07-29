@@ -113,7 +113,7 @@ app.automat1d = {};
             $("#text-input", this.$el).prop("disabled", true);
             $("#sel-output", this.$el).prop("disabled", true);
             this.band = [];
-            this.automat = app.automat1d.palindrom;
+            this.automat = app.automat1d[$("#sel-type", this.$el).val()];
 
             for (var i = 0, len = word.length; i < len; i++) {
                 this.band.push([word[i]]);
