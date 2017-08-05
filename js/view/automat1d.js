@@ -7,6 +7,9 @@ if (!String.prototype.startsWith) {
 
 app.automat1d = {};
     app.automat1d.palindrom = {
+        
+        default_value: "abcdcba",
+        
         cell_step: function (band, pos){
             var left, right, self, ret = ["_", "_", "_", "_"];
             
@@ -84,7 +87,10 @@ app.automat1d = {};
         }
     }
     
-    app.automat1d.mirror = {
+    app.automat1d.mirror1 = {
+        
+        default_value: "abcdef",
+        
         cell_step: function (band, pos){
             var left, right, self, ret = ["_", "_"];
             
@@ -138,6 +144,7 @@ app.automat1d = {};
     
     app.automat1d.sort1 = {
         
+        default_value: "1010101",
         finish_count: 0,
         finish_conf: "",
         
@@ -201,6 +208,7 @@ app.automat1d = {};
     
     app.automat1d.sort2 = {
     
+        default_value: "afdcbe",
         finish_count: 0,
         finish_conf: "",
     
@@ -290,23 +298,165 @@ app.automat1d = {};
         }
     }
     
+app.automat1d.mirror2 = {
+    
+        default_value: "abcdef",
+    
+        cell_step: function (band, pos){
+            var left, right, self, ret = ["_", "_", "_", "_"];
+            
+            self = band[pos];
+            
+            if(pos == 0 ){
+                left = ["#", "#", "#", "#"]
+            } else {
+                left = band[pos - 1];
+            }
+            
+            if(pos >= band.length - 1 ){
+                right = ["#", "#", "#", "#"]
+            } else {
+                right = band[pos + 1];
+            }
+            
+            //init step
+            if(self.length == 1){
+                ret = [self[0], "_", "_", 0]
+                return ret;
+            }
+            
+            //normal step
+            if(self[2] == "v"){
+                return self;
+            }
+            
+            ret = [self[0], self[1],  self[2], self[3] + 1];
+            
+            
+            
+            //oberes Band: nach westen verschieben mit einen Takt Pause           
+            if(self[3] + 1 > 1){
+                ret[0] = right[0] == "#" ? "_" : right[0];
+                ret[3] = 0;
+            }
+            
+            //Mittleres Band: signal nach osten
+            if (left[0] == "#"){
+                if(self[3] + 1 > 1){
+                    ret[1] = "_";
+                } else {
+                    ret[1] = self[0];
+                }
+            } else {
+                ret[1] = left[1];
+            }
+            
+            if((right[0] == "#" && self[1] != "_") || right[2] == "v"){
+                ret = ["#", self[1],  "v", "#"];
+            }
+            
+            return ret;
+        },
+        
+        check_finish: function(band){
+            if(band[0][2] == "v"){
+                return true;
+            }
+            
+            return false;
+        }
+    }
+    
+    app.automat1d.translation = {
+        
+        default_value: "___abcdef",
+        
+        cell_step: function (band, pos){
+            var left, right, self, ret = ["_", "_"];
+            
+            self = band[pos];
+            
+            if(pos == 0 ){
+                left = ["#", "#"]
+            } else {
+                left = band[pos - 1];
+            }
+            
+            if(pos >= band.length - 1 ){
+                right = ["#", "#"]
+            } else {
+                right = band[pos + 1];
+            }
+            
+            //init step
+            if(self.length == 1){
+                ret = [self[0], "_"];
+                
+                if(self[0] == " "){
+                    ret[0] = "_";
+                }
+                
+                if(left[0] == "#"){
+                    ret[1] = "v";
+                }
+                return ret;
+            }
+            
+            //normal step
+            ret = [self[0], self[1]];
+            
+            //signal durchschieben
+            ret[1] = left[1];
+            if(left[0] == "#"){
+                if (self[0] != "_" || right[0] != "_"){
+                    ret[1] = "v2";
+                } else {
+                    ret[1] = "v";
+                }
+            }
+            
+            if(self[1] == "v"){
+                ret[0] = right[0];
+                if(right[0] == "#"){
+                    ret[0] = "_";
+                }
+            }
+            
+            return ret;
+        },
+        
+        check_finish: function(band){
+            if(band[band.length -1][1] == "v2"){
+                return true;
+            }
+            
+            return false;
+        }
+    }
+    
     app.views.automat1d = app.view.$extend({
         
         events: [
              ["click", "#bt-reset", "reset"],
              ["click", "#bt-step", "step"],
+             ["change", "#sel-type", "setDefault"]
          ],
         
         render: function(){
-             
+             var me = this;
              this.$el.load( "views/automat1d.html", function() {
-                 
+                 me.setDefault();
              });
          },
          
          band: null,
          automat: null,
          interval: null,
+         
+         setDefault: function(){
+            var default_value = app.automat1d[$("#sel-type", this.$el).val()].default_value;
+            $("#text-input", this.$el).val(default_value);
+         },
          
          start: function(){
             var word = $("#text-input", this.$el).val();
