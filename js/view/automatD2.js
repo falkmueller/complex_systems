@@ -14,9 +14,12 @@ app.views.automatD2 = app.view.$extend({
     
     render: function(){
              var me = this;
+             this.grid.paper = null;
+             
              this.$el.load( "views/automatD2.html", function() {
                  //load automats
                  Object.keys(app.automat.d2).forEach(function(aKey) {
+                    if('active' in app.automat.d2[aKey] && !app.automat.d2[aKey].active) {return;}
                     var opt = $("<option/>");
                     opt.text(app.automat.d2[aKey].name);
                     opt.attr("value", aKey);
@@ -269,20 +272,44 @@ app.views.automatD2 = app.view.$extend({
         var me = this;
         $.each(values, function(i_row, row){
             $.each(row, function(i_col, value){
-                if(value != me.cell_values[i_row][i_col]){
-                    if(value > 0){
+                if(value !== me.cell_values[i_row][i_col]){
+                    var value_str = "" + value;
+                    if(value_str.substr(0,1) === "0"){
                         me.cell_values[i_row][i_col] = value;
-                        me.cells[i_row][i_col].attr("fill", "#AAD562");
-                        me.cells[i_row][i_col].attr("stroke", "#AAD562");
+                        me.cells[i_row][i_col].attr("fill", me.generate_color(value_str));
+                        me.cells[i_row][i_col].attr("stroke", "#ccc");
                     } else {
-                        me.cell_values[i_row][i_col] = 0;
-                        me.cells[i_row][i_col].attr("fill", "#fff");
+                        me.cell_values[i_row][i_col] = value;
+                        me.cells[i_row][i_col].attr("fill", me.generate_color(value_str));
                         me.cells[i_row][i_col].attr("stroke", "#ccc");
                     }
                 }
             });
         });
-    },  
+    }, 
+    
+    generate_color: function(str){
+        
+        if(str == "1"){
+            return "#AAD562";
+        } else if(str == "0"){
+            return "#FFF";
+        }
+        
+        
+        
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        var colour = '#';
+        for (var i = 0; i < 3; i++) {
+          var value = (hash >> (i * 8)) & 0xFF;
+          colour += ('00' + value.toString(16)).substr(-2);
+        }
+        return colour;
+    },
+    
     }
     
 });
