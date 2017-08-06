@@ -70,7 +70,7 @@ var app = {
          start: function(){
              routie({
                 '': function() {
-                  app.route('automat', {});
+                  app.route('automatD2', {});
                 },
                 '/:view': function(viewrName) {
                    app.route(viewrName, {});
