@@ -2,6 +2,8 @@ app.automat = app.automat  || {};
 app.automat.d1 = app.automat.d1  || {};
 
 app.automat.d1.translation = {
+    
+    name: "Translation nach Links (Leerzeichen/Unterstriche verwenden)",
         
         default_value: "___abcdef",
         

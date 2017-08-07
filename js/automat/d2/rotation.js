@@ -4,7 +4,7 @@ app.automat.d2 = app.automat.d2  || {};
 app.automat.d2.rotation = {
     
     name: "Rotation",
-    active: 0,
+    active: false,
     
     default_value: {
         "standard":  {
@@ -19,6 +19,26 @@ app.automat.d2.rotation = {
                 [1,1,0,1,1],
                 ]
         }
+    },
+    
+     getColor: function(value){
+         var str = "" + value;
+        if(str == "1"){
+            return "#AAD562";
+        } else if(str == "0"){
+            return "#FFF";
+        }
+        
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        var colour = '#';
+        for (var i = 0; i < 3; i++) {
+          var value = (hash >> (i * 8)) & 0xFF;
+          colour += ('00' + value.toString(16)).substr(-2);
+        }
+        return colour;
     },
     
     _get_value: function(grid, x, y, loop){

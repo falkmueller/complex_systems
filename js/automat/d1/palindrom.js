@@ -6,7 +6,7 @@ app.automat.d1 = app.automat.d1  || {};
  * @type type
  */
 app.automat.d1.palindrom = {
-        
+        name: "Erkennung einer Palindromsprache",
         default_value: "abcdcba",
         
         cell_step: function (band, pos){

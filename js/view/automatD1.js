@@ -15,7 +15,16 @@ app.views.automatD1 = app.view.$extend({
 
     render: function(){
          var me = this;
-         this.$el.load( "views/automat1d.html", function() {
+         this.$el.load( "views/automatD1.html", function() {
+              Object.keys(app.automat.d1).forEach(function(aKey) {
+                    if('active' in app.automat.d1[aKey] && !app.automat.d1[aKey].active) {return;}
+                    var opt = $("<option/>");
+                    opt.text(app.automat.d1[aKey].name);
+                    opt.attr("value", aKey);
+                    $("#sel-type", me.$el).append(opt);
+                 });
+             
+             $("#sel-type", me.$el).val("palindrom");
              me.setDefault();
          });
      },

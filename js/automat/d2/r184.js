@@ -24,6 +24,14 @@ app.automat.d2.r184 = {
         }
     },
     
+     getColor: function(value){
+        if(value == 1){
+            return "#AAD562";
+        } else{
+            return "#FFF";
+        }
+    },
+    
     _get_value: function(grid, x, y, loop){
         if(x < 0 || y < 0 || x >= grid.length || y >= grid[x].length){
             if(!loop){

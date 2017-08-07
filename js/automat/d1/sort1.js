@@ -6,6 +6,8 @@ app.automat.d1 = app.automat.d1  || {};
  * @type type
  */
  app.automat.d1.sort1 = {
+     
+     name: "einfaches Sortieren zweier Zustände",
         
         default_value: "1010101",
         finish_count: 0,

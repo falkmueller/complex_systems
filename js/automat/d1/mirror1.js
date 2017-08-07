@@ -6,6 +6,8 @@ app.automat.d1 = app.automat.d1  || {};
  * @type type
  */
 app.automat.d1.mirror1 = {
+    
+        name: "Spiegeln ohne Signal",
         
         default_value: "abcdef",
         

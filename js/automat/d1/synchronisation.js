@@ -2,6 +2,8 @@ app.automat = app.automat  || {};
 app.automat.d1 = app.automat.d1  || {};
 
 app.automat.d1.synchronisation = {
+    
+    name: "Synchronisation (FSSP-1DIM-KLASSISCH-LANGSAM)",
         
         default_value: "ssssssssss",
         

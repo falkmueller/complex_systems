@@ -71,15 +71,15 @@ app.views.automatD2 = app.view.$extend({
         
         //grid initialisieren
         this.generation = 0;
-        this.grid.init("div_paint", grid_config.col_count, grid_config.row_count, grid_config.cells);
+        this.grid.init(this.automat, "div_paint", grid_config.col_count, grid_config.row_count, grid_config.cells);
     },
     
     zoomIn: function(){
-             this.grid.init("div_paint", this.grid.cells.length -2, this.grid.cells[0].length -2, this.grid.cell_values);
+             this.grid.init(this.automat, "div_paint", this.grid.cells.length -2, this.grid.cells[0].length -2, this.grid.cell_values);
          },
          
     zoomOut: function(){
-        this.grid.init("div_paint", this.grid.cells.length + 2, this.grid.cells[0].length + 2, this.grid.cell_values);
+        this.grid.init(this.automat, "div_paint", this.grid.cells.length + 2, this.grid.cells[0].length + 2, this.grid.cell_values);
     },
     
     
@@ -157,6 +157,7 @@ app.views.automatD2 = app.view.$extend({
         cells: null,
         cell_values: null,
         paper: null,
+        automat: null,
         
         toggleCell: function(i_row, i_col){
             var value = (this.cell_values[i_row][i_col] + 1) % 2;
@@ -171,7 +172,8 @@ app.views.automatD2 = app.view.$extend({
 
         },
         
-        init: function(container_id, col_count, row_count, values){
+        init: function(automat, container_id, col_count, row_count, values){
+            this.automat = automat;
             var me = this;
              var grid_size_px = $('#' + container_id).innerWidth();
              var grid_size_cells = Math.max(col_count, row_count);
@@ -201,7 +203,7 @@ app.views.automatD2 = app.view.$extend({
 
                 for (var i_col = 0; i_col < grid_size_cells; i_col++) {
                     var circle = this.paper.circle(i_col * cell_size_px, i_row * cell_size_px, radius);
-                    circle.attr("fill", "#fff");
+                    circle.attr("fill", this.automat.getColor(0));
                     circle.attr("stroke", "#ccc");
                     circle.data("cell_x", i_row);
                     circle.data("cell_y", i_col);
@@ -273,42 +275,13 @@ app.views.automatD2 = app.view.$extend({
         $.each(values, function(i_row, row){
             $.each(row, function(i_col, value){
                 if(value !== me.cell_values[i_row][i_col]){
-                    var value_str = "" + value;
-                    if(value_str.substr(0,1) === "0"){
-                        me.cell_values[i_row][i_col] = value;
-                        me.cells[i_row][i_col].attr("fill", me.generate_color(value_str));
-                        me.cells[i_row][i_col].attr("stroke", "#ccc");
-                    } else {
-                        me.cell_values[i_row][i_col] = value;
-                        me.cells[i_row][i_col].attr("fill", me.generate_color(value_str));
-                        me.cells[i_row][i_col].attr("stroke", "#ccc");
-                    }
+                    me.cell_values[i_row][i_col] = value;
+                    me.cells[i_row][i_col].attr("fill", me.automat.getColor(value));
+                    me.cells[i_row][i_col].attr("stroke", "#ccc");
                 }
             });
         });
     }, 
-    
-    generate_color: function(str){
-        
-        if(str == "1"){
-            return "#AAD562";
-        } else if(str == "0"){
-            return "#FFF";
-        }
-        
-        
-        
-        var hash = 0;
-        for (var i = 0; i < str.length; i++) {
-          hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        var colour = '#';
-        for (var i = 0; i < 3; i++) {
-          var value = (hash >> (i * 8)) & 0xFF;
-          colour += ('00' + value.toString(16)).substr(-2);
-        }
-        return colour;
-    },
     
     }
     

@@ -3,6 +3,8 @@ app.automat.d1 = app.automat.d1  || {};
 
 app.automat.d1.mirror2 = {
     
+     name: "Spiegeln mit Signal",
+     
         default_value: "abcdef",
     
         cell_step: function (band, pos){

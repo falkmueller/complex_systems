@@ -7,6 +7,8 @@ app.automat.d1 = app.automat.d1  || {};
  */
 app.automat.d1.sort2 = {
     
+    name: "Odd-Even-Transposition-Sort",
+    
         default_value: "afdcbe",
         finish_count: 0,
         finish_conf: "",
