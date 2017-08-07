@@ -75,7 +75,7 @@ app.views.automatD2 = app.view.$extend({
     },
     
     zoomIn: function(){
-             this.grid.init(this.automat, "div_paint", this.grid.cells.length -2, this.grid.cells[0].length -2, this.grid.cell_values);
+             this.grid.init(this.automat, "div_paint", this.grid.cells.length -2, this.grid.cells[0].length -1, this.grid.cell_values);
          },
          
     zoomOut: function(){
